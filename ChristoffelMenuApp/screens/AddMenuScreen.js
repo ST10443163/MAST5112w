@@ -66,3 +66,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
+
+/*
+Referencing:
+- The IIE. 2025. Web Development [WEDE5020 Module Manual]. The Independent Institute of Education: Unpublished.
+*/

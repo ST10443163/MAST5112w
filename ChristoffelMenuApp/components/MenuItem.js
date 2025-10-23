@@ -29,3 +29,8 @@ const styles = StyleSheet.create({
   desc: { color: '#555' },
   price: { color: '#2b9348', marginTop: 5 },
 });
+
+/*
+Referencing:
+- The IIE. 2025. Web Development [WEDE5020 Module Manual]. The Independent Institute of Education: Unpublished.
+*/

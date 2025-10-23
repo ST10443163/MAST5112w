@@ -44,3 +44,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
 });
+
+/*
+Referencing:
+- The IIE. 2025. Web Development [WEDE5020 Module Manual]. The Independent Institute of Education: Unpublished.
+*/
