@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -54,10 +54,7 @@ type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 // Home Screen Component
-const HomeScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  // Get menuItems from route params or use empty array as fallback
-  const menuItems: MenuItem[] = route.params?.menuItems || [];
-  
+const HomeScreen: React.FC<{ navigation: any; route: any; menuItems: MenuItem[] }> = ({ navigation, route, menuItems }) => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const scaleAnim = React.useRef(new Animated.Value(0.9)).current;
 
@@ -202,7 +199,7 @@ const HomeScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, rou
       >
         <TouchableOpacity
           style={[styles.actionButton, styles.manageButton]}
-          onPress={() => navigation.navigate('ManageMenu', { menuItems })}
+          onPress={() => navigation.navigate('ManageMenu')}
         >
           <Text style={styles.actionButtonText}>Manage Menu</Text>
         </TouchableOpacity>
@@ -210,7 +207,7 @@ const HomeScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, rou
         {menuItems.length > 0 && (
           <TouchableOpacity
             style={[styles.actionButton, styles.filterButton]}
-            onPress={() => navigation.navigate('FilterMenu', { menuItems })}
+            onPress={() => navigation.navigate('FilterMenu')}
           >
             <Text style={styles.actionButtonText}>Filter by Course</Text>
           </TouchableOpacity>
@@ -233,7 +230,7 @@ const HomeScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, rou
           </Text>
           <TouchableOpacity
             style={styles.emptyStateButton}
-            onPress={() => navigation.navigate('ManageMenu', { menuItems: [] })}
+            onPress={() => navigation.navigate('ManageMenu')}
           >
             <Text style={styles.emptyStateButtonText}>Create Your First Item</Text>
           </TouchableOpacity>
@@ -252,9 +249,7 @@ const HomeScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, rou
 };
 
 // Manage Menu Screen Component
-const ManageMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  const initialMenuItems: MenuItem[] = route.params?.menuItems || [];
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
+const ManageMenuScreen: React.FC<{ navigation: any; route: any; menuItems: MenuItem[]; setMenuItems: React.Dispatch<React.SetStateAction<MenuItem[]>> }> = ({ navigation, menuItems, setMenuItems }) => {
   const [newMenuItem, setNewMenuItem] = useState<NewMenuItemState>({
     name: '',
     description: '',
@@ -329,10 +324,6 @@ const ManageMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigatio
     );
   };
 
-  const goBackToHome = (): void => {
-    navigation.navigate('Home', { menuItems });
-  };
-
   const renderManageMenuItem = ({ item }: { item: MenuItem }) => (
     <Animated.View 
       style={[
@@ -369,7 +360,7 @@ const ManageMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigatio
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={goBackToHome}
+          onPress={() => navigation.goBack()}
         >
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
@@ -492,8 +483,7 @@ const ManageMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigatio
 };
 
 // Filter Menu Screen Component
-const FilterMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
-  const allMenuItems: MenuItem[] = route.params?.menuItems || [];
+const FilterMenuScreen: React.FC<{ navigation: any; route: any; menuItems: MenuItem[] }> = ({ navigation, menuItems }) => {
   const [selectedCourse, setSelectedCourse] = useState<CourseType | 'All'>('All');
   
   const courses: CourseType[] = ['Starters', 'Mains', 'Dessert', 'Drinks'];
@@ -508,8 +498,8 @@ const FilterMenuScreen: React.FC<{ navigation: any; route: any }> = ({ navigatio
   }, []);
 
   const filteredItems = selectedCourse === 'All' 
-    ? allMenuItems 
-    : allMenuItems.filter(item => item.course === selectedCourse);
+    ? menuItems 
+    : menuItems.filter(item => item.course === selectedCourse);
 
   const renderFilteredMenuItem = ({ item }: { item: MenuItem }) => (
     <Animated.View 
@@ -643,7 +633,7 @@ export default function App(): JSX.Element {
         }}
       >
         <Stack.Screen name="Home">
-          {(props) => (
+          {(props: React.JSX.IntrinsicAttributes & { navigation: any; route: any; menuItems: MenuItem[]; }) => (
             <HomeScreen 
               {...props} 
               menuItems={menuItems}
@@ -651,7 +641,7 @@ export default function App(): JSX.Element {
           )}
         </Stack.Screen>
         <Stack.Screen name="ManageMenu">
-          {(props) => (
+          {(props: React.JSX.IntrinsicAttributes & { navigation: any; route: any; menuItems: MenuItem[]; setMenuItems: React.Dispatch<React.SetStateAction<MenuItem[]>>; }) => (
             <ManageMenuScreen 
               {...props} 
               menuItems={menuItems}
@@ -660,7 +650,7 @@ export default function App(): JSX.Element {
           )}
         </Stack.Screen>
         <Stack.Screen name="FilterMenu">
-          {(props) => (
+          {(props: React.JSX.IntrinsicAttributes & { navigation: any; route: any; menuItems: MenuItem[]; }) => (
             <FilterMenuScreen 
               {...props} 
               menuItems={menuItems}
@@ -674,7 +664,6 @@ export default function App(): JSX.Element {
 
 // ... Keep all your existing styles exactly as they are ...
 const styles = StyleSheet.create({
-  // ... All your existing styles remain unchanged ...
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
